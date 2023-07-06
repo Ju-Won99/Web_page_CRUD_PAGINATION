@@ -1,0 +1,133 @@
+.overview-table-cases{
+    width:100%;
+    border-collapse: collapse;
+}
+.overview-table-cases tbody tr {
+    
+    font-weight: bold;
+    color: black;
+    border: 1px solid #444444;
+}
+
+.overview-table-cases td {
+    padding:5px;
+    text-align:center;
+    width:33%;
+    padding:10px;
+    font-size:14px;
+    border: 1px solid #444444;
+}
+
+
+.overview-table-headers {
+    color:black;
+    font-size: 13px;
+}
+
+
+/* classes used for js code hide and displat */
+.pg-hide-row{  
+    display: none;
+}
+
+/* pagination nav block */
+.pg-nav-container{
+    position: fixed;
+    top: 720px;  /* Adjust the top value to position it vertically */
+    
+}
+/* --------- Default ----------- */
+.default-pg-nav-content{
+    display: flex;    
+    align-items: center;
+    height: 30px;    
+    color: grey;     
+    font-size: 16px;   
+    width: fit-content;
+    background: white;      
+      
+}
+
+/* next and prev buttons */
+.default-pg-nav-content [data-dir]{            
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(245, 245, 245);    
+    height: 100%;
+    width: 60px;
+    border-top: 1px solid rgb(194, 194, 194);
+    border-bottom: 1px solid rgb(194, 194, 194);        
+    cursor: pointer;
+    transition: 0.2 ease-in;
+}
+
+/* hover option on buttons */
+.default-pg-nav-content [data-dir]:hover{            
+    background: rgb(210, 210, 210);    
+}
+
+/* 'first' button */
+.default-pg-nav-content .nav-first-page {            
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+/* 'last' button */
+.default-pg-nav-content .nav-last-page {            
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+/* first and last buttons */
+.default-pg-nav-content .nav-single-op{        
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(235, 235, 235);   
+    cursor: pointer;
+}
+
+
+
+/* number containers */
+.default-pg-nav-content .nav-pages-container{
+    display: flex;
+    height: 100%;
+}
+
+/* page buttons parent container */
+.default-pg-nav-content .pg-nav-numbers{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;    
+    height: 100%;
+    border-top: 1px solid rgb(194, 194, 194);
+    border-bottom: 1px solid rgb(194, 194, 194);    
+}
+
+/* page buttons */
+.default-pg-nav-content .pg-num-val{    
+    width: 15px;           
+    text-align: center;
+    transition: 0.2s ease-in;
+    cursor: pointer;        
+    width: 28px;
+    
+}
+
+/* page button hover */
+.default-pg-nav-content .pg-num-val:hover{
+    background: rgb(250, 231, 224);   
+    padding: 8px 0px;
+}
+
+/* page button active class*/
+.default-pg-nav-content .pg-num-active{
+    background: rgb(255, 86, 19) !important;    
+    padding: 10px 4px !important; 
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}

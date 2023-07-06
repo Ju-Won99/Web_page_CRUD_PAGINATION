@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <script src="/js/paginationTable.js"></script>
+        <script src="/js/alerty.js"></script>
+        <link rel="stylesheet" href="/css/paginationTable.css">
+        <link rel="stylesheet" href="/css/alerty.css">
+        <meta charset=:="utf-8">
+        <title>TEST</title>
+        <style>
+            div {
+                font-size: 12px;
+                font-weight: bold;
+            }
+            #a {
+                width: 4%;
+            }
+            input {
+                font-size:12px
+            }
+            button {
+                font-weight: bold
+            }
+            ul{
+                padding:0px;
+                margin:0px;
+                list-style-type: none;
+                background-color: gainsboro;
+            }
+            ul li {
+                display:inline-block;
+            }
+            .selected {
+                background-color: #aecbf1;
+            }
+            .select {
+                background-color: #aecbf1;
+            }
+        </style>
+    </head>
+    <body>
+            <label style = "float:left; font-size:15px; color:blue;font-weight: bold;">AMT 관리 페이지</label>
+            <br>
+        <ul>
+            <li>                     
+                <form id="estimateForm" action="/estimate" method="GET">
+                    <div id="estimateInputs">
+                        <button type="submit">조회</button>
+                        본부이름 <input type="text" name="GUBN1" value = "<%=GUBN1%>" >
+                        팀이름 <input type="text" name="GUBN2" value = "<%=GUBN2%>">
+                    </div>
+                </form>
+            </li>
+        </ul>
+        <div style = "display: inline-flex; ">
+            <span style="font-size: 15px; color: blue;">데이터 목록</span>
+            <button style = "margin-left: 10px;" type="button" onclick="addNewRow()">박스 추가</button>
+            <form id="saveForm" action="/save" method="POST" style = "padding-left: 10px">
+                <button type = "button" onclick="saveData()" >저장</button>
+            </form>
+            <form id="deleteForm" action="/delete" method = "post" style = "padding-left: 10px">
+                <div>
+                    <button type = "button" onclick="deleteSelectedRows()">삭제</button>
+                </div>
+            </form>
+            <form id="updateForm" action="/update" method="POST" style = "padding-left: 10px">
+                <button type="button" onclick="updateSelectedRows()">수정</button>
+            </form>
+            <button style = "margin-left: 10px" type = "button" onclick = "remove()">초기화</button>
+        </div>
+        <table class="overview-table-cases" id="table-one">
+            <thead>
+                <tr class="overview-table-headers" style = "background-color: gainsboro;">
+                    <th id = "a">NO.</th>
+                    <th id = "a">CHECK<input id = "checkAll" type="checkbox"></th>
+                    <th>본부이름</th>
+                    <th>팀이름</th>
+                    <th id = "a">월</th>
+                    <th>AMT</th>        
+                </tr>
+            </thead>
+            <tbody>
+                <% for (var i = 0; i < result_data.length; i++) { %>
+                  <tr >
+                    <td id = "a" data-id="<%= result_data[i].ID%>"><%=i+1%></td>
+                    <td id = "a"><input class="target" type="checkbox" name="Check" data-id="<%= result_data[i].ID%>"></td>
+                    <td contenteditable="true"><%= result_data[i].GUBN1 %></td>
+                    <td contenteditable="true"><%= result_data[i].GUBN2 %></td>
+                    <td contenteditable="true" id = "a"><%= result_data[i].MON %></td>
+                    <td contenteditable="true"><%= result_data[i].AMT %></td>
+                  </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <script>
+            // 체크박스 전체 선택/해제 함수
+            function toggleCheckboxes() {
+                var rows = document.querySelectorAll('tbody tr:not(.pg-hide-row)');
+                var checkboxes = document.querySelectorAll('tbody tr:not(.pg-hide-row) .target');
+                var isChecked = this.checked;
+
+                for (var i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].checked = isChecked;                    
+                }
+                for (var i = 0; i < rows.length; i++) {
+                    if (!rows[i].classList.contains('pg-hide-row')) {
+                        if (isChecked) {
+                            rows[i].classList.add('selected');
+                        } else {
+                            rows[i].classList.remove('selected');
+                        }
+                    }
+                }
+                var currentPageRows = document.querySelectorAll('tbody tr.pg-hide-row');
+                for (var i = 0; i < currentPageRows.length; i++) {
+                    currentPageRows[i].classList.remove('selected');
+                    currentPageRows[i].querySelector('.target').checked = false;
+                }
+                
+            }           
+            // 체크박스 전체 선택/해제 이벤트 처리
+            var checkAllCheckbox = document.getElementById('checkAll');
+            checkAllCheckbox.addEventListener('change', toggleCheckboxes);
+        </script>
+        <!--PAGINATION AND EVENTLISTNER-->
+        <script>
+            Paginator.init({tableID:"table-one", rows:10,navStyle:'default'});
+            document.addEventListener('DOMContentLoaded', function() {
+                var rows = document.querySelectorAll('tbody tr');  
+
+                rows.forEach(function(row) {
+                row.addEventListener('click', function() {
+                    var checkbox = this.querySelector('input[type="checkbox"]');
+                    var isChecked = checkbox.checked;
+                    if (isChecked) {
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                    // var selectedRows = document.querySelectorAll('.select');  
+                    // if (selectedRows.length === 1 && selectedRows[0] === this) {
+                    //     return; 
+                    // }        
+
+                    // selectedRows.forEach(function(selectedRow) {
+                    //     selectedRow.classList.remove('select');
+                    // });           
+
+                    // this.classList.add('select');
+                    });
+                });
+            });
+            // Enter키 이벤트 헨들러
+            document.addEventListener('keydown', function(event) {
+                var alertElement = document.querySelector('.alerty.alerty-show');
+                
+                if (event.key === 'Enter' && alertElement) {
+                    var okButton = alertElement.querySelector('.alerty-action .btn-ok');
+                    
+                    if (okButton) {
+                        event.preventDefault();
+                        okButton.click();
+                    }
+                }
+            });
+            var next = document.getElementsByClassName('nav-next-page');
+            var prev = document.getElementsByClassName('nav-prev-page');
+            var all_check_btn = document.getElementById('checkAll');
+            // next 버튼 클릭 시 이벤트 핸들러
+            next[0].addEventListener('click', function() {
+                all_check_btn.checked = false;
+                var checkboxes = document.querySelectorAll('tbody tr:not(.pg-hide-row) .target');
+                var rows = document.querySelectorAll('tbody tr:not(.pg-hide-row)');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    rows[i].classList.remove('selected');
+                    checkboxes[i].checked = false;
+                }
+            });
+            // prev 버튼 클릭 시 이벤트 핸들러
+            prev[0].addEventListener('click', function() {
+                all_check_btn.checked = false;
+                var checkboxes = document.querySelectorAll('tbody tr:not(.pg-hide-row) .target');
+                var rows = document.querySelectorAll('tbody tr:not(.pg-hide-row)');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    rows[i].classList.remove('selected');
+                    checkboxes[i].checked = false;
+                }
+            });
+        </script>
+        <!--UPDATE, ADD, DELETE, CHECK-->
+        <script>
+            //수정 함수
+           function updateSelectedRows() {
+                var updateForm = document.getElementById('updateForm');
+                var rows = document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                var dataArr = [];
+    
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var id = row.cells[0].getAttribute('data-id');
+                    var UGUBN1 = row.cells[2].innerText;
+                    var UGUBN2 = row.cells[3].innerText;
+                    var UMON = row.cells[4].innerText;
+                    var UAMT = row.cells[5].innerText;
+                    if(UGUBN1 === '' || UGUBN2 ==='' || UMON === '' || UAMT === ''){
+                        alerty.alert('값을 다 채워 주세요'  ,{title: 'info', okLabel: '계속'})
+                        return;
+                    }
+                    else if(isNaN(UAMT)) {
+                        alerty.alert('AMT 값에는 숫자 값만 입력해 주세요'  ,{title: 'info', okLabel: '계속'});
+                        return;
+                    }
+                    var isDuplicate = check();
+                    if (isDuplicate) {
+                        alerty.alert('중복된 데이터 값으로 수정 할 수 없습니다'  ,{title: 'info', okLabel: '계속'});
+                        return;
+                    }
+                    var data = {
+                        UID: id,
+                        UGUBN1: UGUBN1,
+                        UGUBN2: UGUBN2,
+                        UMON: UMON,
+                        UAMT: UAMT
+                    };
+                    dataArr.push(data);
+                }
+                var datainput = document.createElement('input');
+                datainput.type = 'Hidden';
+                datainput.name = 'dataArr';
+                datainput.value = JSON.stringify(dataArr);
+                updateForm.appendChild(datainput);
+    
+                updateForm.submit();
+            }
+            var maxRows = 5;
+            var currentRows = 0;
+            //박스 추가 함수
+            function addNewRow() {              
+                if (currentRows >= maxRows) {
+                    alerty.alert('최대 ' + maxRows + '개까지만 추가할 수 있습니다.',{title: 'info', okLabel: '계속'});
+                    return;
+                }
+
+                var tableBody = document.getElementsByTagName('tbody')[0];
+                var newRow = document.createElement('tr');
+                newRow.className = 'new-row';
+
+                var columns = [
+                    '<td id="a"></td>',
+                    '<td id="a"><input class="target" type="checkbox"></td>',
+                    '<td contenteditable="true"></td>',
+                    '<td contenteditable="true"></td>',
+                    '<td id="a" contenteditable="true"></td>',
+                    '<td contenteditable="true"></td>'
+                ];
+
+                newRow.innerHTML = columns.join('');
+                tableBody.appendChild(newRow);
+
+                currentRows++;
+
+                if (currentRows >= maxRows) {
+                    var addButton = document.getElementById('addButton');
+                    addButton.disabled = true;
+                }
+            }
+            //저장함수
+            function saveData() {
+                var newRows = document.getElementsByClassName('new-row');
+                if(newRows.length === 0 ) {
+                    alerty.alert('저장할 데이터가 없습니다.'  ,{title: 'info', okLabel: '계속'})
+                    return;
+                }
+                
+                var saveForm = document.getElementById('saveForm');
+                var dataArr = [];
+                
+                
+                for (var i = 0; i < newRows.length; i++) {
+                    var row = newRows[i];
+                    var gubn1 = row.cells[2].innerText;
+                    var gubn2 = row.cells[3].innerText;
+                    var mon = row.cells[4].innerText;
+                    var amt = row.cells[5].innerText;
+                    if(gubn1 === '' || gubn2 ==='' || mon === '' || amt === ''){
+                        alerty.alert('값을 다 채워 주세요'  ,{title: 'info', okLabel: '계속'})
+                        return;
+                    }
+                    else if(isNaN(amt)) {
+                        alerty.alert('AMT 값에는 숫자 값만 입력해 주세요'  ,{title: 'info', okLabel: '계속'})
+                        return;
+                    }
+                    var isDuplicate = check();
+                    if (isDuplicate) {
+                        alerty.alert('중복된 데이터 값은 추가 할 수 없습니다'  ,{title: 'info', okLabel: '계속'});
+                        return;
+                    }
+                    var data = {
+                        SGUBN1: gubn1,
+                        SGUBN2: gubn2,
+                        SMON: mon,
+                        SAMT: amt
+                    };
+                    dataArr.push(data);
+                }
+
+                var dataInput = document.createElement('input');
+                dataInput.type = 'hidden';
+                dataInput.name = 'dataArr';
+                dataInput.value = JSON.stringify(dataArr);
+                saveForm.appendChild(dataInput);
+                
+                
+                saveForm.submit();        
+            }
+            //삭제함수
+            function deleteSelectedRows() {
+            var checkboxes = document.getElementsByClassName('target');
+            var selectedRows = [];
+
+            for( var i = 0; i < checkboxes.length; i ++) {
+                if(checkboxes[i].checked) {
+                    selectedRows.push(checkboxes[i].getAttribute('data-id'));
+                }
+            }
+            if (selectedRows.length === 0) {
+                alerty.alert('체크해야합니다'  ,{title: 'info', okLabel: '계속'})
+                return;
+            }
+            
+            alerty.confirm(
+                '삭제 하시겠습니까?',
+                { title: 'Notes', okLabel: '네', cancelLabel: '아니요' },
+                function () {
+                    var deleteForm = document.getElementById('deleteForm');
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'selectedRows';
+                    hiddenInput.value = JSON.stringify(selectedRows);
+                    deleteForm.appendChild(hiddenInput);
+                    deleteForm.submit();
+                },
+                function () {
+                    return;
+                }
+            );              
+        }
+        //제약조건 체크
+            function check() {
+                var rows = document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                var dataArr = [];
+
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var gubn1 = row.cells[2].innerText;
+                    var gubn2 = row.cells[3].innerText;
+                    var mon = row.cells[4].innerText;
+                    var amt = row.cells[5].innerText;
+
+                    var data = {
+                        SGUBN1: gubn1,
+                        SGUBN2: gubn2,
+                        SMON: mon,
+                        SAMT: amt
+                    };
+                    dataArr.push(data);
+                }
+                for (var k = 0; k < dataArr.length; k++) {
+                    var isDuplicate = false;
+                    for (var j = 0; j < dataArr.length; j++) {
+                        if (k !== j &&
+                            dataArr[k].SGUBN1.trim() === dataArr[j].SGUBN1.trim() &&
+                            dataArr[k].SGUBN2.trim() === dataArr[j].SGUBN2.trim() &&
+                            dataArr[k].SMON.trim() === dataArr[j].SMON.trim()) {
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                    if (isDuplicate) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+       </script>
+       <!--MOVE-->
+       <script>
+            function change() {
+                window.location.href = '/update'
+            }
+            function remove() {        
+                window.location.href = '/estimate';
+            }
+        </script>
+    </body>
+</html>
