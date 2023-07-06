@@ -1,13 +1,13 @@
 const sql = require('mssql');
 const config = {
-    server : '192.168.1.160',
-    port: 1433,
+    server : 'IP Number',
+    port: DB_Port_Number,
     options: {encrypt:false, database: 'Northwind'},
     authentication: {
         type:"default",
         options:{
-            userName:"user999",
-            password:"1234"
+            userName:"DB_ID",
+            password:"DB_PASSWORD"
         }
     }
 };
