@@ -1,0 +1,4 @@
+*.js linguist-detectable
+*.html linguist-detectable
+*.ejs linguist-detectable
+node_modules/ linguist-vendored
