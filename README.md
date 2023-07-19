@@ -9,4 +9,9 @@ Setting IIS
 
 Connect Node.js folder and IIS
 
+you can install
+  USING NPM 
+  - express
+  - iisnode-full-v0.2.21-x64.msi -> Install this msi file, if you want to use Node.js in IIS
+
 thx
